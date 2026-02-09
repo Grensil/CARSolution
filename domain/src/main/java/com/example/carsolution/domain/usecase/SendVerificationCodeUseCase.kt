@@ -3,8 +3,9 @@ package com.example.carsolution.domain.usecase
 import com.example.carsolution.domain.model.PhoneVerificationEvent
 import com.example.carsolution.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class SendVerificationCodeUseCase(
+class SendVerificationCodeUseCase @Inject constructor(
     private val repository: AuthRepository,
 ) {
     operator fun invoke(
