@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
@@ -49,6 +50,17 @@ android {
 }
 
 dependencies {
+    // Modules
+    implementation(project(":core:common"))
+    implementation(project(":core:navigation"))
+    implementation(project(":core:designsystem"))
+    implementation(project(":domain"))
+    implementation(project(":data"))
+    implementation(project(":feature:insurance"))
+    implementation(project(":feature:fuel"))
+    implementation(project(":feature:usedcar"))
+    implementation(project(":feature:accident"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -57,6 +69,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.kotlinx.serialization.json)
 
     // Hilt
     implementation(libs.hilt.android)

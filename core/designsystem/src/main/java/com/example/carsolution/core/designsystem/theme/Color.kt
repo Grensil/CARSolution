@@ -1,4 +1,4 @@
-package com.example.carsolution.ui.theme
+package com.example.carsolution.core.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 

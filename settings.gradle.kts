@@ -21,3 +21,12 @@ dependencyResolutionManagement {
 
 rootProject.name = "CARSolution"
 include(":app")
+include(":core:common")
+include(":core:navigation")
+include(":core:designsystem")
+include(":domain")
+include(":data")
+include(":feature:insurance")
+include(":feature:fuel")
+include(":feature:usedcar")
+include(":feature:accident")
