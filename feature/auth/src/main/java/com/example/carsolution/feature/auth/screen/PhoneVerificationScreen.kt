@@ -1,5 +1,6 @@
 package com.example.carsolution.feature.auth.screen
 
+import android.app.Activity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -7,10 +8,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,46 +25,56 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.carsolution.feature.auth.viewmodel.PhoneAuthUiState
+import com.example.carsolution.feature.auth.viewmodel.PhoneAuthViewModel
 import kotlinx.coroutines.delay
 
-/**
- * 휴대폰 본인인증 화면.
- *
- * 현재는 Fake OTP 방식 (아무 6자리 코드 입력시 통과).
- * 추후 아임포트(PortOne) 본인인증 SDK로 교체 예정.
- *
- * 아임포트 연동 시:
- * 1. build.gradle에 iamport-android SDK 의존성 추가
- * 2. "인증 요청" 버튼 → Iamport.certification() 호출
- * 3. 콜백에서 imp_uid 수신 → 서버에서 인증 결과 검증
- * 4. 성공 시 onVerified() 호출
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PhoneVerificationScreen(
     onBack: () -> Unit,
     onVerified: () -> Unit,
+    viewModel: PhoneAuthViewModel = hiltViewModel(),
 ) {
+    val activity = LocalContext.current as Activity
+    val uiState by viewModel.uiState.collectAsState()
+
     var phoneNumber by rememberSaveable { mutableStateOf("") }
     var otpCode by rememberSaveable { mutableStateOf("") }
-    var otpSent by rememberSaveable { mutableStateOf(false) }
     var remainingSeconds by remember { mutableIntStateOf(0) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    // 타이머
-    LaunchedEffect(otpSent, remainingSeconds) {
-        if (otpSent && remainingSeconds > 0) {
-            delay(1000)
-            remainingSeconds--
+    val codeSent = uiState is PhoneAuthUiState.CodeSent
+            || (uiState is PhoneAuthUiState.Error && (uiState as PhoneAuthUiState.Error).codeSent)
+            || uiState is PhoneAuthUiState.Verifying
+
+    // Timer
+    LaunchedEffect(codeSent) {
+        if (codeSent) {
+            remainingSeconds = 120
+            while (remainingSeconds > 0) {
+                delay(1000)
+                remainingSeconds--
+            }
+        }
+    }
+
+    // Navigate on verified
+    LaunchedEffect(uiState) {
+        if (uiState is PhoneAuthUiState.Verified) {
+            onVerified()
         }
     }
 
@@ -100,52 +113,48 @@ fun PhoneVerificationScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // 전화번호 입력
+            // Phone number input
             OutlinedTextField(
                 value = phoneNumber,
-                onValueChange = {
-                    phoneNumber = it.filter { c -> c.isDigit() }.take(11)
-                    errorMessage = null
-                },
+                onValueChange = { phoneNumber = it.filter { c -> c.isDigit() }.take(11) },
                 label = { Text("휴대폰 번호") },
                 placeholder = { Text("01012345678") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !otpSent,
+                enabled = !codeSent,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (!otpSent) {
+            // Send code button
+            if (!codeSent) {
+                val isSending = uiState is PhoneAuthUiState.SendingCode
                 Button(
-                    onClick = {
-                        if (phoneNumber.length < 10) {
-                            errorMessage = "올바른 휴대폰 번호를 입력해주세요"
-                        } else {
-                            // TODO: 아임포트 연동 시 Iamport.certification() 호출로 교체
-                            otpSent = true
-                            remainingSeconds = 180
-                            errorMessage = null
-                        }
-                    },
+                    onClick = { viewModel.sendVerificationCode(phoneNumber, activity) },
+                    enabled = phoneNumber.length >= 10 && !isSending,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
                 ) {
-                    Text("인증번호 받기", style = MaterialTheme.typography.titleMedium)
+                    if (isSending) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp,
+                        )
+                    } else {
+                        Text("인증번호 받기", style = MaterialTheme.typography.titleMedium)
+                    }
                 }
             }
 
-            // OTP 입력 영역
-            AnimatedVisibility(visible = otpSent) {
+            // OTP section
+            AnimatedVisibility(visible = codeSent) {
                 Column {
                     OutlinedTextField(
                         value = otpCode,
-                        onValueChange = {
-                            otpCode = it.filter { c -> c.isDigit() }.take(6)
-                            errorMessage = null
-                        },
+                        onValueChange = { otpCode = it.filter { c -> c.isDigit() }.take(6) },
                         label = { Text("인증번호 6자리") },
                         placeholder = { Text("000000") },
                         singleLine = true,
@@ -163,7 +172,10 @@ fun PhoneVerificationScreen(
                                     },
                                 )
                             } else {
-                                Text("인증 시간이 만료되었습니다", color = MaterialTheme.colorScheme.error)
+                                Text(
+                                    "인증 시간이 만료되었습니다",
+                                    color = MaterialTheme.colorScheme.error,
+                                )
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -171,23 +183,23 @@ fun PhoneVerificationScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    val isVerifying = uiState is PhoneAuthUiState.Verifying
                     Button(
-                        onClick = {
-                            // Fake: 아무 6자리 입력시 통과
-                            if (otpCode.length == 6 && remainingSeconds > 0) {
-                                onVerified()
-                            } else if (remainingSeconds <= 0) {
-                                errorMessage = "인증 시간이 만료되었습니다. 다시 요청해주세요."
-                            } else {
-                                errorMessage = "6자리 인증번호를 입력해주세요"
-                            }
-                        },
-                        enabled = otpCode.length == 6 && remainingSeconds > 0,
+                        onClick = { viewModel.verifyCode(otpCode) },
+                        enabled = otpCode.length == 6 && remainingSeconds > 0 && !isVerifying,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
                     ) {
-                        Text("인증 확인", style = MaterialTheme.typography.titleMedium)
+                        if (isVerifying) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp,
+                            )
+                        } else {
+                            Text("인증 확인", style = MaterialTheme.typography.titleMedium)
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -195,8 +207,7 @@ fun PhoneVerificationScreen(
                     OutlinedButton(
                         onClick = {
                             otpCode = ""
-                            remainingSeconds = 180
-                            errorMessage = null
+                            viewModel.resendCode(phoneNumber, activity)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -207,11 +218,12 @@ fun PhoneVerificationScreen(
                 }
             }
 
-            // 에러 메시지
-            errorMessage?.let { msg ->
+            // Error message
+            val errorState = uiState as? PhoneAuthUiState.Error
+            if (errorState != null) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = msg,
+                    text = errorState.message,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                 )

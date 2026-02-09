@@ -21,6 +21,9 @@ local.properties
 !gradle-wrapper.properties
 !gradle.properties
 
+# Firebase
+**/google-services.json
+
 # API Keys and secrets
 secrets.properties
 api_keys.properties
