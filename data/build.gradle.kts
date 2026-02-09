@@ -31,6 +31,11 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.kotlinx.coroutines.play.services)
+
     // Network
     implementation(libs.retrofit)
     implementation(libs.retrofit.kotlinx.serialization)
