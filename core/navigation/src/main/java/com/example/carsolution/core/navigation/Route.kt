@@ -2,6 +2,13 @@ package com.example.carsolution.core.navigation
 
 import kotlinx.serialization.Serializable
 
+// ── App-level ────────────────────────────────────────────────
+@Serializable data object SplashRoute
+@Serializable data object AuthGraph
+@Serializable data object VehicleNumberInput
+@Serializable data class VehicleConfirm(val plateNumber: String)
+@Serializable data object MainRoute
+
 // ── Graph Routes ──────────────────────────────────────────────
 @Serializable data object InsuranceGraph
 @Serializable data object FuelGraph

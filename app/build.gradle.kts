@@ -60,6 +60,7 @@ dependencies {
     implementation(project(":feature:fuel"))
     implementation(project(":feature:usedcar"))
     implementation(project(":feature:accident"))
+    implementation(project(":feature:auth"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.carsolution.core.designsystem.theme.CARSolutionTheme
-import com.example.carsolution.ui.MainScreen
+import com.example.carsolution.navigation.AppNavHost
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CARSolutionTheme {
-                MainScreen()
+                AppNavHost()
             }
         }
     }
