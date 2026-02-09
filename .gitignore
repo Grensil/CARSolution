@@ -1,0 +1,30 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+**/build/
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Sensitive files
+*.jks
+*.keystore
+*.properties
+!gradle-wrapper.properties
+!gradle.properties
+
+# API Keys and secrets
+secrets.properties
+api_keys.properties
+
+# Generated files
+app/release/
+app/debug/
