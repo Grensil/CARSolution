@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable data object AuthGraph
 @Serializable data object VehicleNumberInput
 @Serializable data class VehicleConfirm(val plateNumber: String)
+@Serializable data object PhoneVerification
 @Serializable data object MainRoute
 
 // ── Graph Routes ──────────────────────────────────────────────

@@ -7,8 +7,10 @@ import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.example.carsolution.core.navigation.AuthGraph
 import com.example.carsolution.core.navigation.MainRoute
+import com.example.carsolution.core.navigation.PhoneVerification
 import com.example.carsolution.core.navigation.VehicleConfirm
 import com.example.carsolution.core.navigation.VehicleNumberInput
+import com.example.carsolution.feature.auth.screen.PhoneVerificationScreen
 import com.example.carsolution.feature.auth.screen.VehicleConfirmScreen
 import com.example.carsolution.feature.auth.screen.VehicleNumberInputScreen
 
@@ -27,6 +29,14 @@ fun NavGraphBuilder.authNavGraph(navController: NavController) {
                 plateNumber = route.plateNumber,
                 onBack = { navController.popBackStack() },
                 onConfirm = {
+                    navController.navigate(PhoneVerification)
+                },
+            )
+        }
+        composable<PhoneVerification> {
+            PhoneVerificationScreen(
+                onBack = { navController.popBackStack() },
+                onVerified = {
                     navController.navigate(MainRoute) {
                         popUpTo(0) { inclusive = true }
                     }
