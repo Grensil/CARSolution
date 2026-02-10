@@ -18,41 +18,46 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+    private const val TIMEOUT_SECONDS = 30L
+    private const val DATA_GO_KR_SERVICE_KEY = ""
 
     @Provides
     @Singleton
-    fun provideJson(): Json = Json {
-        ignoreUnknownKeys = true
-        coerceInputValues = true
-    }
+    fun provideJson(): Json =
+        Json {
+            ignoreUnknownKeys = true
+            coerceInputValues = true
+        }
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .addInterceptor(
-            HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            }
-        )
-        .build()
+    fun provideOkHttpClient(): OkHttpClient =
+        OkHttpClient
+            .Builder()
+            .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .addInterceptor(
+                HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.BODY
+                },
+            ).build()
 
     @Provides
     @Singleton
     fun provideRetrofit(
         okHttpClient: OkHttpClient,
         json: Json,
-    ): Retrofit = Retrofit.Builder()
-        .baseUrl("https://apis.data.go.kr/")
-        .client(okHttpClient)
-        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
-        .build()
+    ): Retrofit =
+        Retrofit
+            .Builder()
+            .baseUrl("https://apis.data.go.kr/")
+            .client(okHttpClient)
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .build()
 
     @Provides
     @Singleton
-    fun provideVehicleApiService(retrofit: Retrofit): VehicleApiService =
-        retrofit.create(VehicleApiService::class.java)
+    fun provideVehicleApiService(retrofit: Retrofit): VehicleApiService = retrofit.create(VehicleApiService::class.java)
 
     /**
      * data.go.kr API 서비스키.
@@ -61,5 +66,5 @@ object NetworkModule {
      */
     @Provides
     @Named("dataGoKrServiceKey")
-    fun provideServiceKey(): String = ""
+    fun provideServiceKey(): String = DATA_GO_KR_SERVICE_KEY
 }

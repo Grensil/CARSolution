@@ -11,7 +11,6 @@ import retrofit2.http.Query
  * 실제 API 경로/파라미터는 data.go.kr 문서 참고하여 조정.
  */
 interface VehicleApiService {
-
     @GET("1613000/RPT_BASE_MVEHI_INFO/CarRegistInfo")
     suspend fun getVehicleByPlateNumber(
         @Query("serviceKey") serviceKey: String,

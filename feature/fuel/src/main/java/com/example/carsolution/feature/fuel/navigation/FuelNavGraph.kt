@@ -21,7 +21,6 @@ fun NavGraphBuilder.fuelNavGraph(navController: NavController) {
             FuelHomeScreen(
                 onNavigateToList = { navController.navigate(FuelStationList) },
                 onNavigateToDetail = { id -> navController.navigate(FuelStationDetail(id)) },
-                onNavigateToVehicle = { id -> navController.navigate(VehicleDetail(id)) },
             )
         }
         composable<FuelStationList> {

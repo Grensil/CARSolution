@@ -27,15 +27,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
+private const val SPLASH_DELAY_MS = 1500L
+
 @Composable
-fun SplashScreen(
-    onNavigateToAuth: () -> Unit,
-) {
+fun SplashScreen(onNavigateToAuth: () -> Unit) {
     var visible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         visible = true
-        delay(1500)
+        delay(SPLASH_DELAY_MS)
         onNavigateToAuth()
     }
 

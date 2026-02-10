@@ -40,13 +40,14 @@ data class VehicleDto(
     @SerialName("fuelNm") val fuelType: String = "",
     @SerialName("dsplvl") val displacement: Int = 0,
 ) {
-    fun toDomain(): Vehicle = Vehicle(
-        id = "v-${plateNumber.hashCode()}",
-        plateNumber = plateNumber,
-        name = name,
-        manufacturer = manufacturer,
-        year = year,
-        fuelType = fuelType,
-        displacement = displacement,
-    )
+    fun toDomain(): Vehicle =
+        Vehicle(
+            id = "v-${plateNumber.hashCode()}",
+            plateNumber = plateNumber,
+            name = name,
+            manufacturer = manufacturer,
+            year = year,
+            fuelType = fuelType,
+            displacement = displacement,
+        )
 }

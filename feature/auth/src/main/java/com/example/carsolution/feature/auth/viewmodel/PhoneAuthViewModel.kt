@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.io.IOException
 import javax.inject.Inject
 
 private data class VerificationRequest(
@@ -23,62 +24,80 @@ private data class VerificationRequest(
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
-class PhoneAuthViewModel @Inject constructor(
-    private val sendVerificationCodeUseCase: SendVerificationCodeUseCase,
-    private val verifyPhoneCodeUseCase: VerifyPhoneCodeUseCase,
-) : ViewModel() {
+class PhoneAuthViewModel
+    @Inject
+    constructor(
+        private val sendVerificationCodeUseCase: SendVerificationCodeUseCase,
+        private val verifyPhoneCodeUseCase: VerifyPhoneCodeUseCase,
+    ) : ViewModel() {
+        private val _uiState = MutableStateFlow<PhoneAuthUiState>(PhoneAuthUiState.Idle)
+        val uiState: StateFlow<PhoneAuthUiState> = _uiState
 
-    private val _uiState = MutableStateFlow<PhoneAuthUiState>(PhoneAuthUiState.Idle)
-    val uiState: StateFlow<PhoneAuthUiState> = _uiState
+        private val verificationRequest = MutableSharedFlow<VerificationRequest>(extraBufferCapacity = 1)
 
-    private val verificationRequest = MutableSharedFlow<VerificationRequest>(extraBufferCapacity = 1)
+        init {
+            viewModelScope.launch {
+                verificationRequest
+                    .onEach { _uiState.value = PhoneAuthUiState.SendingCode }
+                    .flatMapLatest { request ->
+                        sendVerificationCodeUseCase(request.phoneNumber, request.activity, request.forceResend)
+                    }.collect { event ->
+                        when (event) {
+                            is PhoneVerificationEvent.CodeSent -> {
+                                _uiState.value = PhoneAuthUiState.CodeSent
+                            }
 
-    init {
-        viewModelScope.launch {
-            verificationRequest
-                .onEach { _uiState.value = PhoneAuthUiState.SendingCode }
-                .flatMapLatest { request ->
-                    sendVerificationCodeUseCase(request.phoneNumber, request.activity, request.forceResend)
-                }
-                .collect { event ->
-                    when (event) {
-                        is PhoneVerificationEvent.CodeSent -> {
-                            _uiState.value = PhoneAuthUiState.CodeSent
-                        }
-                        is PhoneVerificationEvent.AutoVerified -> {
-                            _uiState.value = PhoneAuthUiState.Verified
-                        }
-                        is PhoneVerificationEvent.Failed -> {
-                            _uiState.value = PhoneAuthUiState.Error(
-                                message = event.message,
-                                codeSent = _uiState.value is PhoneAuthUiState.CodeSent,
-                            )
+                            is PhoneVerificationEvent.AutoVerified -> {
+                                _uiState.value = PhoneAuthUiState.Verified
+                            }
+
+                            is PhoneVerificationEvent.Failed -> {
+                                _uiState.value = PhoneAuthUiState.Error(
+                                    message = event.message,
+                                    codeSent = _uiState.value is PhoneAuthUiState.CodeSent,
+                                )
+                            }
                         }
                     }
-                }
+            }
         }
-    }
 
-    fun sendVerificationCode(phoneNumber: String, activity: Any) {
-        verificationRequest.tryEmit(VerificationRequest(phoneNumber, activity, forceResend = false))
-    }
+        fun sendVerificationCode(
+            phoneNumber: String,
+            activity: Any,
+        ) {
+            verificationRequest.tryEmit(VerificationRequest(phoneNumber, activity, forceResend = false))
+        }
 
-    fun resendCode(phoneNumber: String, activity: Any) {
-        verificationRequest.tryEmit(VerificationRequest(phoneNumber, activity, forceResend = true))
-    }
+        fun resendCode(
+            phoneNumber: String,
+            activity: Any,
+        ) {
+            verificationRequest.tryEmit(VerificationRequest(phoneNumber, activity, forceResend = true))
+        }
 
-    fun verifyCode(smsCode: String) {
-        _uiState.value = PhoneAuthUiState.Verifying
-        viewModelScope.launch {
-            try {
-                verifyPhoneCodeUseCase(smsCode)
-                _uiState.value = PhoneAuthUiState.Verified
-            } catch (e: Exception) {
-                _uiState.value = PhoneAuthUiState.Error(
-                    message = e.message ?: "인증에 실패했습니다",
-                    codeSent = true,
-                )
+        fun verifyCode(smsCode: String) {
+            _uiState.value = PhoneAuthUiState.Verifying
+            viewModelScope.launch {
+                try {
+                    verifyPhoneCodeUseCase(smsCode)
+                    _uiState.value = PhoneAuthUiState.Verified
+                } catch (e: IOException) {
+                    _uiState.value = PhoneAuthUiState.Error(
+                        message = e.message ?: "네트워크 오류가 발생했습니다",
+                        codeSent = true,
+                    )
+                } catch (e: IllegalArgumentException) {
+                    _uiState.value = PhoneAuthUiState.Error(
+                        message = e.message ?: "인증에 실패했습니다",
+                        codeSent = true,
+                    )
+                } catch (e: IllegalStateException) {
+                    _uiState.value = PhoneAuthUiState.Error(
+                        message = e.message ?: "인증에 실패했습니다",
+                        codeSent = true,
+                    )
+                }
             }
         }
     }
-}

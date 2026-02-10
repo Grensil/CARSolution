@@ -10,10 +10,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+@Suppress("AbstractClassCanBeInterface")
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class AuthModule {
-
     @Binds
     @Singleton
     abstract fun bindAuthRemoteDataSource(impl: FirebaseAuthDataSource): AuthRemoteDataSource

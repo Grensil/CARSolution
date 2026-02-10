@@ -32,7 +32,6 @@ import com.example.carsolution.feature.fuel.viewmodel.FuelHomeViewModel
 fun FuelHomeScreen(
     onNavigateToList: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
-    onNavigateToVehicle: (String) -> Unit,
 ) {
     val viewModel: FuelHomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
@@ -47,12 +46,14 @@ fun FuelHomeScreen(
                     contentAlignment = Alignment.Center,
                 ) { CircularProgressIndicator() }
             }
+
             is UiState.Error -> {
                 Box(
                     modifier = Modifier.fillMaxSize().padding(padding),
                     contentAlignment = Alignment.Center,
                 ) { Text(state.message) }
             }
+
             is UiState.Success -> {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize().padding(padding),

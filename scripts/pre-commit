@@ -1,0 +1,22 @@
+#!/bin/bash
+
+echo "🔧 Running formatKotlin..."
+./gradlew formatKotlin --daemon -q
+
+if [ $? -ne 0 ]; then
+    echo "❌ formatKotlin failed"
+    exit 1
+fi
+
+# Re-stage any files that were auto-formatted
+git diff --name-only | grep '\.kt$' | xargs -r git add
+
+echo "🔍 Running lintKotlin..."
+./gradlew lintKotlin --daemon -q
+
+if [ $? -ne 0 ]; then
+    echo "❌ ktlint check failed"
+    exit 1
+fi
+
+echo "✅ Pre-commit checks passed"

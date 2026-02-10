@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.google.services)
     alias(libs.plugins.stability.analyzer)
+    alias(libs.plugins.dependency.guard)
+    alias(libs.plugins.module.graph.assert)
 }
 
 android {
@@ -53,6 +55,24 @@ android {
 
 composeCompiler {
     stabilityConfigurationFiles.add(rootProject.layout.projectDirectory.file("compose-stability.conf"))
+}
+
+moduleGraphAssert {
+    maxHeight = 4
+    restricted = arrayOf(
+        ":feature:.* -X> :data",       // feature는 data 직접 접근 금지
+        ":feature:.* -X> :app",        // feature는 app 의존 금지
+        ":domain -X> :data",           // domain은 data 모를 것
+        ":domain -X> :feature:.*",     // domain은 feature 모를 것
+        ":domain -X> :app",            // domain은 app 모를 것
+        ":domain -X> :core:.*",        // domain은 core 모를 것
+        ":data -X> :feature:.*",       // data는 feature 모를 것
+        ":data -X> :app",             // data는 app 모를 것
+    )
+}
+
+dependencyGuard {
+    configuration("releaseRuntimeClasspath")
 }
 
 dependencies {

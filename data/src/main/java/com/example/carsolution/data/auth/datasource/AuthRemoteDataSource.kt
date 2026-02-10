@@ -13,5 +13,6 @@ interface AuthRemoteDataSource {
     ): Flow<FirebaseVerificationEvent>
 
     suspend fun verifyCode(smsCode: String): FirebaseUserDto
+
     fun getCurrentUser(): FirebaseUserDto?
 }

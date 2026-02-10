@@ -24,9 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun VehicleNumberInputScreen(
-    onLookup: (String) -> Unit,
-) {
+fun VehicleNumberInputScreen(onLookup: (String) -> Unit) {
     var plateNumber by rememberSaveable { mutableStateOf("") }
 
     Scaffold { padding ->

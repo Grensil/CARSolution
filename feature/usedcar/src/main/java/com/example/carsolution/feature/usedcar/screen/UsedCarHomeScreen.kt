@@ -34,7 +34,6 @@ import java.util.Locale
 fun UsedCarHomeScreen(
     onNavigateToList: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
-    onNavigateToVehicle: (String) -> Unit,
 ) {
     val viewModel: UsedCarHomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
@@ -49,12 +48,14 @@ fun UsedCarHomeScreen(
                     contentAlignment = Alignment.Center,
                 ) { CircularProgressIndicator() }
             }
+
             is UiState.Error -> {
                 Box(
                     modifier = Modifier.fillMaxSize().padding(padding),
                     contentAlignment = Alignment.Center,
                 ) { Text(state.message) }
             }
+
             is UiState.Success -> {
                 val formatter = NumberFormat.getNumberInstance(Locale.KOREA)
                 LazyColumn(
@@ -78,7 +79,8 @@ fun UsedCarHomeScreen(
                                 Text(car.name, style = MaterialTheme.typography.titleMedium)
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    "${car.year}년 · ${formatter.format(car.mileage)}km · ${formatter.format(car.price)}원",
+                                    "${car.year}년 · ${formatter.format(car.mileage)}km" +
+                                        " · ${formatter.format(car.price)}원",
                                     style = MaterialTheme.typography.bodyMedium,
                                 )
                             }

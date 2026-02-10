@@ -21,7 +21,6 @@ fun NavGraphBuilder.accidentNavGraph(navController: NavController) {
             AccidentHomeScreen(
                 onNavigateToReport = { navController.navigate(AccidentReport) },
                 onNavigateToDetail = { id -> navController.navigate(AccidentDetail(id)) },
-                onNavigateToVehicle = { id -> navController.navigate(VehicleDetail(id)) },
             )
         }
         composable<AccidentReport> {

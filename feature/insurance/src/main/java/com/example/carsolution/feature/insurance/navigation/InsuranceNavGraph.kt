@@ -21,7 +21,6 @@ fun NavGraphBuilder.insuranceNavGraph(navController: NavController) {
             InsuranceHomeScreen(
                 onNavigateToList = { navController.navigate(InsuranceList) },
                 onNavigateToDetail = { id -> navController.navigate(InsuranceDetail(id)) },
-                onNavigateToVehicle = { id -> navController.navigate(VehicleDetail(id)) },
             )
         }
         composable<InsuranceList> {

@@ -12,6 +12,8 @@ interface AuthRepository {
     ): Flow<PhoneVerificationEvent>
 
     suspend fun verifyCode(smsCode: String): AuthUser
+
     fun getCurrentUser(): AuthUser?
+
     fun isLoggedIn(): Boolean
 }

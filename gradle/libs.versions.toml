@@ -20,6 +20,12 @@ retrofitKotlinxSerialization = "1.0.0"
 firebaseBom = "33.7.0"
 googleServices = "4.4.2"
 composeStabilityAnalyzer = "0.6.4"
+detekt = "2.0.0-alpha.2"
+dependencyGuard = "0.5.0"
+moduleGraphAssert = "2.9.0"
+kotlinter = "5.4.0"
+androidCacheFix = "3.0.2"
+sonarlint = "7.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -63,3 +69,9 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 stability-analyzer = { id = "com.github.skydoves.compose.stability.analyzer", version.ref = "composeStabilityAnalyzer" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
+dependency-guard = { id = "com.dropbox.dependency-guard", version.ref = "dependencyGuard" }
+module-graph-assert = { id = "com.jraska.module.graph.assertion", version.ref = "moduleGraphAssert" }
+kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
+android-cache-fix = { id = "org.gradle.android.cache-fix", version.ref = "androidCacheFix" }
+sonarlint = { id = "name.remal.sonarlint", version.ref = "sonarlint" }

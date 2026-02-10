@@ -21,7 +21,6 @@ fun NavGraphBuilder.usedCarNavGraph(navController: NavController) {
             UsedCarHomeScreen(
                 onNavigateToList = { navController.navigate(UsedCarList) },
                 onNavigateToDetail = { id -> navController.navigate(UsedCarDetail(id)) },
-                onNavigateToVehicle = { id -> navController.navigate(VehicleDetail(id)) },
             )
         }
         composable<UsedCarList> {

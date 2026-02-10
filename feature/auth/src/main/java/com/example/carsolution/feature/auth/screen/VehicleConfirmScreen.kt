@@ -205,7 +205,10 @@ private fun VehicleConfirmContent(
 }
 
 @Composable
-private fun VehicleInfoRow(label: String, value: String) {
+private fun VehicleInfoRow(
+    label: String,
+    value: String,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
     ) {

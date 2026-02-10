@@ -9,29 +9,33 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
-class InsuranceHomeViewModel @Inject constructor(
-    private val repository: InsuranceRepository,
-) : ViewModel() {
+class InsuranceHomeViewModel
+    @Inject
+    constructor(
+        private val repository: InsuranceRepository,
+    ) : ViewModel() {
+        private val _uiState = MutableStateFlow<UiState<List<Insurance>>>(UiState.Loading)
+        val uiState: StateFlow<UiState<List<Insurance>>> = _uiState
 
-    private val _uiState = MutableStateFlow<UiState<List<Insurance>>>(UiState.Loading)
-    val uiState: StateFlow<UiState<List<Insurance>>> = _uiState
+        init {
+            loadInsuranceList()
+        }
 
-    init {
-        loadInsuranceList()
-    }
-
-    private fun loadInsuranceList() {
-        viewModelScope.launch {
-            _uiState.value = UiState.Loading
-            try {
-                val list = repository.getInsuranceList()
-                _uiState.value = UiState.Success(list)
-            } catch (e: Exception) {
-                _uiState.value = UiState.Error(e.message ?: "Unknown error")
+        private fun loadInsuranceList() {
+            viewModelScope.launch {
+                _uiState.value = UiState.Loading
+                try {
+                    val list = repository.getInsuranceList()
+                    _uiState.value = UiState.Success(list)
+                } catch (e: IOException) {
+                    _uiState.value = UiState.Error(e.message ?: "네트워크 오류가 발생했습니다")
+                } catch (e: IllegalStateException) {
+                    _uiState.value = UiState.Error(e.message ?: "Unknown error")
+                }
             }
         }
     }
-}
