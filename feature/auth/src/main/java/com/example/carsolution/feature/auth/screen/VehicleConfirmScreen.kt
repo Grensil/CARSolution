@@ -46,8 +46,8 @@ fun VehicleConfirmScreen(
     plateNumber: String,
     onBack: () -> Unit,
     onConfirm: () -> Unit,
-    viewModel: AuthViewModel = hiltViewModel(),
 ) {
+    val viewModel: AuthViewModel = hiltViewModel()
     val uiState by viewModel.vehicleLookup.collectAsState()
 
     LaunchedEffect(plateNumber) {

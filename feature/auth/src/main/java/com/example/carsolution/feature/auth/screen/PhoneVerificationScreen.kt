@@ -47,8 +47,8 @@ import kotlinx.coroutines.delay
 fun PhoneVerificationScreen(
     onBack: () -> Unit,
     onVerified: () -> Unit,
-    viewModel: PhoneAuthViewModel = hiltViewModel(),
 ) {
+    val viewModel: PhoneAuthViewModel = hiltViewModel()
     val activity = LocalContext.current as Activity
     val uiState by viewModel.uiState.collectAsState()
 

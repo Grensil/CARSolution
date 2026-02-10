@@ -33,8 +33,8 @@ fun InsuranceHomeScreen(
     onNavigateToList: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
     onNavigateToVehicle: (String) -> Unit,
-    viewModel: InsuranceHomeViewModel = hiltViewModel(),
 ) {
+    val viewModel: InsuranceHomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(

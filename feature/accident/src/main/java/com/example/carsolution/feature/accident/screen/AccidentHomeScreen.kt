@@ -33,8 +33,8 @@ fun AccidentHomeScreen(
     onNavigateToReport: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
     onNavigateToVehicle: (String) -> Unit,
-    viewModel: AccidentHomeViewModel = hiltViewModel(),
 ) {
+    val viewModel: AccidentHomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(

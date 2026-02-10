@@ -35,8 +35,8 @@ import java.util.Locale
 fun UsedCarListScreen(
     onBack: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
-    viewModel: UsedCarHomeViewModel = hiltViewModel(),
 ) {
+    val viewModel: UsedCarHomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(

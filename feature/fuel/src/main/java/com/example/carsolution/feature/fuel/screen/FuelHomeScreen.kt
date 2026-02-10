@@ -33,8 +33,8 @@ fun FuelHomeScreen(
     onNavigateToList: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
     onNavigateToVehicle: (String) -> Unit,
-    viewModel: FuelHomeViewModel = hiltViewModel(),
 ) {
+    val viewModel: FuelHomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(

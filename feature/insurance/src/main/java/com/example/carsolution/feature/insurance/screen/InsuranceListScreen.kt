@@ -33,8 +33,8 @@ import com.example.carsolution.feature.insurance.viewmodel.InsuranceHomeViewMode
 fun InsuranceListScreen(
     onBack: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
-    viewModel: InsuranceHomeViewModel = hiltViewModel(),
 ) {
+    val viewModel: InsuranceHomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(

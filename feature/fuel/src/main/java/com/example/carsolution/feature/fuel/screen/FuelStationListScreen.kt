@@ -33,8 +33,8 @@ import com.example.carsolution.feature.fuel.viewmodel.FuelHomeViewModel
 fun FuelStationListScreen(
     onBack: () -> Unit,
     onNavigateToDetail: (String) -> Unit,
-    viewModel: FuelHomeViewModel = hiltViewModel(),
 ) {
+    val viewModel: FuelHomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
