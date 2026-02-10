@@ -6,12 +6,22 @@ import com.example.carsolution.domain.model.PhoneVerificationEvent
 import com.example.carsolution.domain.usecase.SendVerificationCodeUseCase
 import com.example.carsolution.domain.usecase.VerifyPhoneCodeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private data class VerificationRequest(
+    val phoneNumber: String,
+    val activity: Any,
+    val forceResend: Boolean,
+)
+
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class PhoneAuthViewModel @Inject constructor(
     private val sendVerificationCodeUseCase: SendVerificationCodeUseCase,
@@ -21,14 +31,40 @@ class PhoneAuthViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<PhoneAuthUiState>(PhoneAuthUiState.Idle)
     val uiState: StateFlow<PhoneAuthUiState> = _uiState
 
-    private var verificationJob: Job? = null
+    private val verificationRequest = MutableSharedFlow<VerificationRequest>(extraBufferCapacity = 1)
+
+    init {
+        viewModelScope.launch {
+            verificationRequest
+                .onEach { _uiState.value = PhoneAuthUiState.SendingCode }
+                .flatMapLatest { request ->
+                    sendVerificationCodeUseCase(request.phoneNumber, request.activity, request.forceResend)
+                }
+                .collect { event ->
+                    when (event) {
+                        is PhoneVerificationEvent.CodeSent -> {
+                            _uiState.value = PhoneAuthUiState.CodeSent
+                        }
+                        is PhoneVerificationEvent.AutoVerified -> {
+                            _uiState.value = PhoneAuthUiState.Verified
+                        }
+                        is PhoneVerificationEvent.Failed -> {
+                            _uiState.value = PhoneAuthUiState.Error(
+                                message = event.message,
+                                codeSent = _uiState.value is PhoneAuthUiState.CodeSent,
+                            )
+                        }
+                    }
+                }
+        }
+    }
 
     fun sendVerificationCode(phoneNumber: String, activity: Any) {
-        startVerification(phoneNumber, activity, forceResend = false)
+        verificationRequest.tryEmit(VerificationRequest(phoneNumber, activity, forceResend = false))
     }
 
     fun resendCode(phoneNumber: String, activity: Any) {
-        startVerification(phoneNumber, activity, forceResend = true)
+        verificationRequest.tryEmit(VerificationRequest(phoneNumber, activity, forceResend = true))
     }
 
     fun verifyCode(smsCode: String) {
@@ -42,30 +78,6 @@ class PhoneAuthViewModel @Inject constructor(
                     message = e.message ?: "인증에 실패했습니다",
                     codeSent = true,
                 )
-            }
-        }
-    }
-
-    private fun startVerification(phoneNumber: String, activity: Any, forceResend: Boolean) {
-        verificationJob?.cancel()
-        _uiState.value = PhoneAuthUiState.SendingCode
-
-        verificationJob = viewModelScope.launch {
-            sendVerificationCodeUseCase(phoneNumber, activity, forceResend).collect { event ->
-                when (event) {
-                    is PhoneVerificationEvent.CodeSent -> {
-                        _uiState.value = PhoneAuthUiState.CodeSent
-                    }
-                    is PhoneVerificationEvent.AutoVerified -> {
-                        _uiState.value = PhoneAuthUiState.Verified
-                    }
-                    is PhoneVerificationEvent.Failed -> {
-                        _uiState.value = PhoneAuthUiState.Error(
-                            message = event.message,
-                            codeSent = _uiState.value is PhoneAuthUiState.CodeSent,
-                        )
-                    }
-                }
             }
         }
     }
