@@ -37,7 +37,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.carsolution.core.common.UiState
-import com.example.carsolution.domain.model.Vehicle
 import com.example.carsolution.feature.auth.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,8 +93,14 @@ fun VehicleConfirmScreen(
             }
 
             is UiState.Success -> {
+                val vehicle = state.data
                 VehicleConfirmContent(
-                    vehicle = state.data,
+                    manufacturer = vehicle.manufacturer,
+                    name = vehicle.name,
+                    plateNumber = vehicle.plateNumber,
+                    year = vehicle.year,
+                    fuelType = vehicle.fuelType,
+                    displacement = vehicle.displacement,
                     onBack = onBack,
                     onConfirm = onConfirm,
                     modifier = Modifier.padding(padding),
@@ -107,7 +112,12 @@ fun VehicleConfirmScreen(
 
 @Composable
 private fun VehicleConfirmContent(
-    vehicle: Vehicle,
+    manufacturer: String,
+    name: String,
+    plateNumber: String,
+    year: Int,
+    fuelType: String,
+    displacement: Int,
     onBack: () -> Unit,
     onConfirm: () -> Unit,
     modifier: Modifier = Modifier,
@@ -144,12 +154,12 @@ private fun VehicleConfirmContent(
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
-                            text = "${vehicle.manufacturer} ${vehicle.name}",
+                            text = "$manufacturer $name",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                         )
                         Text(
-                            text = vehicle.plateNumber,
+                            text = plateNumber,
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.primary,
                         )
@@ -160,11 +170,11 @@ private fun VehicleConfirmContent(
                 HorizontalDivider()
                 Spacer(modifier = Modifier.height(16.dp))
 
-                VehicleInfoRow("연식", "${vehicle.year}년")
+                VehicleInfoRow("연식", "${year}년")
                 Spacer(modifier = Modifier.height(8.dp))
-                VehicleInfoRow("연료", vehicle.fuelType)
+                VehicleInfoRow("연료", fuelType)
                 Spacer(modifier = Modifier.height(8.dp))
-                VehicleInfoRow("배기량", "${vehicle.displacement}cc")
+                VehicleInfoRow("배기량", "${displacement}cc")
             }
         }
 

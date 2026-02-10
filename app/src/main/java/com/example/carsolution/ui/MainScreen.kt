@@ -9,11 +9,16 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.carsolution.core.designsystem.component.CARSolutionBottomBar
+import com.example.carsolution.core.navigation.InsuranceGraph
 import com.example.carsolution.core.navigation.TopLevelDestination
-import com.example.carsolution.navigation.CARSolutionNavHost
+import com.example.carsolution.feature.accident.navigation.accidentNavGraph
+import com.example.carsolution.feature.fuel.navigation.fuelNavGraph
+import com.example.carsolution.feature.insurance.navigation.insuranceNavGraph
+import com.example.carsolution.feature.usedcar.navigation.usedCarNavGraph
 
 @Composable
 fun MainScreen() {
@@ -43,11 +48,17 @@ fun MainScreen() {
             )
         },
     ) { innerPadding ->
-        CARSolutionNavHost(
+        NavHost(
             navController = navController,
+            startDestination = InsuranceGraph,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-        )
+        ) {
+            insuranceNavGraph(navController)
+            fuelNavGraph(navController)
+            usedCarNavGraph(navController)
+            accidentNavGraph(navController)
+        }
     }
 }
