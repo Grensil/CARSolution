@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Skip if no Kotlin files are staged
+STAGED_KT=$(git diff --cached --name-only --diff-filter=ACM | grep '\.kt$' || true)
+if [ -z "$STAGED_KT" ]; then
+    echo "✅ No Kotlin files staged, skipping checks"
+    exit 0
+fi
+
 echo "🔧 Running formatKotlin..."
 ./gradlew formatKotlin --daemon -q
 
