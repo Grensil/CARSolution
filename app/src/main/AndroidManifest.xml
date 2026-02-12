@@ -5,18 +5,18 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".CARSolutionApp"
+        android:name=".CarInfoApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CARSolution">
+        android:theme="@style/Theme.CarInfo">
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:enableOnBackInvokedCallback="true"
-            android:theme="@style/Theme.CARSolution">
+            android:theme="@style/Theme.CarInfo">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

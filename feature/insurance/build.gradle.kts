@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.carsolution.feature.insurance"
+    namespace = "com.grensil.carinfo.feature.insurance"
     compileSdk = 36
 
     defaultConfig {

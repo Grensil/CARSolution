@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -6,14 +8,26 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
+val localProps = rootProject.file("local.properties")
+val opinetApiKey: String = if (localProps.exists()) {
+    Properties().apply { localProps.inputStream().use { load(it) } }
+        .getProperty("OPINET_API_KEY", "")
+} else {
+    ""
+}
+
 android {
-    namespace = "com.example.carsolution.data"
+    namespace = "com.grensil.carinfo.data"
     compileSdk = 36
 
     defaultConfig {
         minSdk = 24
+        buildConfigField("String", "OPINET_API_KEY", "\"$opinetApiKey\"")
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -43,5 +57,6 @@ dependencies {
     implementation(libs.okhttp.logging)
 
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
 }

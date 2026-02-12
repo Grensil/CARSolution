@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.carsolution.core.common"
+    namespace = "com.grensil.carinfo.core.common"
     compileSdk = 36
 
     defaultConfig {

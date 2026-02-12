@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.carsolution.feature.auth"
+    namespace = "com.grensil.carinfo.feature.auth"
     compileSdk = 36
 
     defaultConfig {

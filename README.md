@@ -1,4 +1,4 @@
-# CARSolution
+# CarInfo
 
 Android 개발에서 사용되는 다양한 기술과 아키텍처 패턴을 직접 적용하고 테스트해보기 위한 토이 프로젝트입니다.
 
@@ -19,7 +19,7 @@ Android 개발에서 사용되는 다양한 기술과 아키텍처 패턴을 직
 ├── :data                 # Repository 구현, Retrofit, Firebase
 ├── :feature:insurance    # 보험 탭
 ├── :feature:fuel         # 주유 탭
-├── :feature:usedcar      # 중고차 탭
+├── :feature:vehiclespec   # 차량스펙 탭
 ├── :feature:accident     # 사고 탭
 └── :feature:auth         # 인증 (Splash, 차량번호, 본인인증)
 ```
@@ -54,6 +54,13 @@ Android 개발에서 사용되는 다양한 기술과 아키텍처 패턴을 직
 - Firebase Authentication 기반 휴대폰 본인인증 흐름 구현
 - 인증 코드 발송 -> OTP 입력 -> 검증 전체 플로우
 - 타이머 UI, 재발송 로직 포함
+
+### 실제 API 연동
+
+- **NHTSA vPIC API**: VIN 번호로 차량 스펙 조회 (무료, 인증 불필요)
+- **오피넷(OPINET) API**: 전국 평균 유가, 최저가 주유소 TOP 10 조회
+  - API 키 미발급 시 Fake 데이터로 자동 fallback (graceful degradation)
+- `@Named` qualifier로 다중 Retrofit 인스턴스 관리 (data.go.kr, NHTSA, OPINET)
 
 ### Retrofit 네트워크 레이어
 
@@ -112,10 +119,23 @@ Compose 프로젝트 특성에 맞게 Detekt 규칙을 커스터마이징했습�
 | Navigation | Navigation Compose 2.9.5 + kotlinx-serialization |
 | DI | Hilt 2.58 + KSP |
 | Network | Retrofit 2.11 + OkHttp 4.12 + kotlinx-serialization |
+| API | NHTSA vPIC (차량 스펙), OPINET (유가 정보) |
 | Auth | Firebase Authentication (Phone Auth) |
 | Build | AGP 8.12.3, Gradle Version Catalog |
 | Code Quality | Detekt, Kotlinter, SonarLint, Dependency Guard, Module Graph Assert |
 | CI | GitHub Actions |
+
+## API 설정
+
+### NHTSA vPIC API
+별도 설정 없이 사용 가능합니다. 차량스펙 탭에서 VIN 번호를 입력하면 자동으로 조회됩니다.
+
+### OPINET API (선택)
+`local.properties`에 API 키를 추가하면 실시간 유가 정보를 사용할 수 있습니다:
+```properties
+OPINET_API_KEY=your_api_key_here
+```
+API 키가 없으면 Fake 데이터로 동작합니다.
 
 ## 빌드 및 실행
 

@@ -28,7 +28,7 @@ jobs:
 
       - name: Create dummy google-services.json
         run: |
-          echo '{"project_info":{"project_number":"0","project_id":"dummy","storage_bucket":"dummy.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:0:android:dummy","android_client_info":{"package_name":"com.example.carsolution"}},"api_key":[{"current_key":"dummy"}]}],"configuration_version":"1"}' > app/google-services.json
+          echo '{"project_info":{"project_number":"0","project_id":"dummy","storage_bucket":"dummy.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:0:android:dummy","android_client_info":{"package_name":"com.grensil.carinfo"}},"api_key":[{"current_key":"dummy"}]}],"configuration_version":"1"}' > app/google-services.json
 
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
@@ -57,7 +57,7 @@ jobs:
 
       - name: Create dummy google-services.json
         run: |
-          echo '{"project_info":{"project_number":"0","project_id":"dummy","storage_bucket":"dummy.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:0:android:dummy","android_client_info":{"package_name":"com.example.carsolution"}},"api_key":[{"current_key":"dummy"}]}],"configuration_version":"1"}' > app/google-services.json
+          echo '{"project_info":{"project_number":"0","project_id":"dummy","storage_bucket":"dummy.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:0:android:dummy","android_client_info":{"package_name":"com.grensil.carinfo"}},"api_key":[{"current_key":"dummy"}]}],"configuration_version":"1"}' > app/google-services.json
 
       - name: Run Detekt
         run: ./gradlew detektMain
@@ -86,7 +86,7 @@ jobs:
 
       - name: Create dummy google-services.json
         run: |
-          echo '{"project_info":{"project_number":"0","project_id":"dummy","storage_bucket":"dummy.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:0:android:dummy","android_client_info":{"package_name":"com.example.carsolution"}},"api_key":[{"current_key":"dummy"}]}],"configuration_version":"1"}' > app/google-services.json
+          echo '{"project_info":{"project_number":"0","project_id":"dummy","storage_bucket":"dummy.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:0:android:dummy","android_client_info":{"package_name":"com.grensil.carinfo"}},"api_key":[{"current_key":"dummy"}]}],"configuration_version":"1"}' > app/google-services.json
 
       - name: Run Ktlint
         run: ./gradlew lintKotlin
@@ -108,7 +108,7 @@ jobs:
 
       - name: Create dummy google-services.json
         run: |
-          echo '{"project_info":{"project_number":"0","project_id":"dummy","storage_bucket":"dummy.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:0:android:dummy","android_client_info":{"package_name":"com.example.carsolution"}},"api_key":[{"current_key":"dummy"}]}],"configuration_version":"1"}' > app/google-services.json
+          echo '{"project_info":{"project_number":"0","project_id":"dummy","storage_bucket":"dummy.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:0:android:dummy","android_client_info":{"package_name":"com.grensil.carinfo"}},"api_key":[{"current_key":"dummy"}]}],"configuration_version":"1"}' > app/google-services.json
 
       - name: Assert Module Graph
         run: ./gradlew assertModuleGraph
@@ -134,7 +134,7 @@ jobs:
 
       - name: Create dummy google-services.json
         run: |
-          echo '{"project_info":{"project_number":"0","project_id":"dummy","storage_bucket":"dummy.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:0:android:dummy","android_client_info":{"package_name":"com.example.carsolution"}},"api_key":[{"current_key":"dummy"}]}],"configuration_version":"1"}' > app/google-services.json
+          echo '{"project_info":{"project_number":"0","project_id":"dummy","storage_bucket":"dummy.appspot.com"},"client":[{"client_info":{"mobilesdk_app_id":"1:0:android:dummy","android_client_info":{"package_name":"com.grensil.carinfo"}},"api_key":[{"current_key":"dummy"}]}],"configuration_version":"1"}' > app/google-services.json
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug

@@ -12,11 +12,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.carsolution"
+    namespace = "com.grensil.carinfo"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.carsolution"
+        applicationId = "com.grensil.carinfo"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -84,7 +84,7 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":feature:insurance"))
     implementation(project(":feature:fuel"))
-    implementation(project(":feature:usedcar"))
+    implementation(project(":feature:vehiclespec"))
     implementation(project(":feature:accident"))
     implementation(project(":feature:auth"))
 

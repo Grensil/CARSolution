@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.carsolution.feature.fuel"
+    namespace = "com.grensil.carinfo.feature.fuel"
     compileSdk = 36
 
     defaultConfig {

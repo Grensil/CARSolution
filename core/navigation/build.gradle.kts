@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.carsolution.core.navigation"
+    namespace = "com.grensil.carinfo.core.navigation"
     compileSdk = 36
 
     defaultConfig {

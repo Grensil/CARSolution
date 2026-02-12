@@ -19,7 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "CARSolution"
+rootProject.name = "CarInfo"
 include(":app")
 include(":core:common")
 include(":core:navigation")
@@ -28,6 +28,6 @@ include(":domain")
 include(":data")
 include(":feature:insurance")
 include(":feature:fuel")
-include(":feature:usedcar")
+include(":feature:vehiclespec")
 include(":feature:accident")
 include(":feature:auth")
