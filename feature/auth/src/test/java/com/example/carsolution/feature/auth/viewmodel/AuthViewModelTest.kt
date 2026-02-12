@@ -3,7 +3,7 @@ package com.example.carsolution.feature.auth.viewmodel
 import app.cash.turbine.test
 import com.example.carsolution.core.common.UiState
 import com.example.carsolution.domain.model.Vehicle
-import com.example.carsolution.domain.repository.VehicleRepository
+import com.example.carsolution.domain.usecase.LookupVehicleUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +21,7 @@ import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AuthViewModelTest {
-    private val repository: VehicleRepository = mockk()
+    private val lookupVehicle: LookupVehicleUseCase = mockk()
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @Before
@@ -39,9 +39,9 @@ class AuthViewModelTest {
         runTest {
             // Given
             val vehicle = Vehicle("v-1", "12가3456", "아반떼", "현대", 2022, "가솔린", 1598)
-            coEvery { repository.getVehicleByPlateNumber("12가3456") } returns vehicle
+            coEvery { lookupVehicle("12가3456") } returns vehicle
 
-            val viewModel = AuthViewModel(repository)
+            val viewModel = AuthViewModel(lookupVehicle)
 
             // When
             viewModel.lookupVehicle("12가3456")
@@ -55,12 +55,12 @@ class AuthViewModelTest {
         }
 
     @Test
-    fun `차량 번호로 조회 결과가 null이면 Error 상태가 된다`() =
+    fun `차량 번호로 조회 결과가 없으면 Error 상태가 된다`() =
         runTest {
             // Given
-            coEvery { repository.getVehicleByPlateNumber("99하9999") } returns null
+            coEvery { lookupVehicle("99하9999") } throws NoSuchElementException("차량 정보를 찾을 수 없습니다")
 
-            val viewModel = AuthViewModel(repository)
+            val viewModel = AuthViewModel(lookupVehicle)
 
             // When
             viewModel.lookupVehicle("99하9999")
@@ -77,9 +77,9 @@ class AuthViewModelTest {
     fun `IOException 발생 시 Error 상태가 된다`() =
         runTest {
             // Given
-            coEvery { repository.getVehicleByPlateNumber(any()) } throws IOException("네트워크 오류")
+            coEvery { lookupVehicle(any()) } throws IOException("네트워크 오류")
 
-            val viewModel = AuthViewModel(repository)
+            val viewModel = AuthViewModel(lookupVehicle)
 
             // When
             viewModel.lookupVehicle("12가3456")

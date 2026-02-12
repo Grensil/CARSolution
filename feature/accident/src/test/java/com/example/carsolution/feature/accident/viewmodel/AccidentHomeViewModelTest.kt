@@ -3,7 +3,7 @@ package com.example.carsolution.feature.accident.viewmodel
 import app.cash.turbine.test
 import com.example.carsolution.core.common.UiState
 import com.example.carsolution.domain.model.Accident
-import com.example.carsolution.domain.repository.AccidentRepository
+import com.example.carsolution.domain.usecase.GetAccidentListUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +21,7 @@ import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AccidentHomeViewModelTest {
-    private val repository: AccidentRepository = mockk()
+    private val getAccidentList: GetAccidentListUseCase = mockk()
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @Before
@@ -41,10 +41,10 @@ class AccidentHomeViewModelTest {
             val accidents = listOf(
                 Accident("acc-1", "2024-12-01", "서울시 강남구", "추돌사고"),
             )
-            coEvery { repository.getAccidentList() } returns accidents
+            coEvery { getAccidentList() } returns accidents
 
             // When
-            val viewModel = AccidentHomeViewModel(repository)
+            val viewModel = AccidentHomeViewModel(getAccidentList)
 
             // Then
             viewModel.uiState.test {
@@ -58,10 +58,10 @@ class AccidentHomeViewModelTest {
     fun `IOException 발생 시 Error 상태가 된다`() =
         runTest {
             // Given
-            coEvery { repository.getAccidentList() } throws IOException("네트워크 오류")
+            coEvery { getAccidentList() } throws IOException("네트워크 오류")
 
             // When
-            val viewModel = AccidentHomeViewModel(repository)
+            val viewModel = AccidentHomeViewModel(getAccidentList)
 
             // Then
             viewModel.uiState.test {
@@ -74,10 +74,10 @@ class AccidentHomeViewModelTest {
     fun `IllegalStateException 발생 시 Error 상태가 된다`() =
         runTest {
             // Given
-            coEvery { repository.getAccidentList() } throws IllegalStateException("서버 오류")
+            coEvery { getAccidentList() } throws IllegalStateException("서버 오류")
 
             // When
-            val viewModel = AccidentHomeViewModel(repository)
+            val viewModel = AccidentHomeViewModel(getAccidentList)
 
             // Then
             viewModel.uiState.test {

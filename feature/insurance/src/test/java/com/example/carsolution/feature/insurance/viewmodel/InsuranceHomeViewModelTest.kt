@@ -3,7 +3,7 @@ package com.example.carsolution.feature.insurance.viewmodel
 import app.cash.turbine.test
 import com.example.carsolution.core.common.UiState
 import com.example.carsolution.domain.model.Insurance
-import com.example.carsolution.domain.repository.InsuranceRepository
+import com.example.carsolution.domain.usecase.GetInsuranceListUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +21,7 @@ import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class InsuranceHomeViewModelTest {
-    private val repository: InsuranceRepository = mockk()
+    private val getInsuranceList: GetInsuranceListUseCase = mockk()
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @Before
@@ -42,10 +42,10 @@ class InsuranceHomeViewModelTest {
                 Insurance("ins-1", "종합보험", "삼성화재", 50000),
                 Insurance("ins-2", "책임보험", "현대해상", 30000),
             )
-            coEvery { repository.getInsuranceList() } returns insurances
+            coEvery { getInsuranceList() } returns insurances
 
             // When
-            val viewModel = InsuranceHomeViewModel(repository)
+            val viewModel = InsuranceHomeViewModel(getInsuranceList)
 
             // Then
             viewModel.uiState.test {
@@ -59,10 +59,10 @@ class InsuranceHomeViewModelTest {
     fun `보험 리스트가 비어있으면 빈 Success를 반환한다`() =
         runTest {
             // Given
-            coEvery { repository.getInsuranceList() } returns emptyList()
+            coEvery { getInsuranceList() } returns emptyList()
 
             // When
-            val viewModel = InsuranceHomeViewModel(repository)
+            val viewModel = InsuranceHomeViewModel(getInsuranceList)
 
             // Then
             viewModel.uiState.test {
@@ -76,10 +76,10 @@ class InsuranceHomeViewModelTest {
     fun `IOException 발생 시 Error 상태가 된다`() =
         runTest {
             // Given
-            coEvery { repository.getInsuranceList() } throws IOException("네트워크 오류")
+            coEvery { getInsuranceList() } throws IOException("네트워크 오류")
 
             // When
-            val viewModel = InsuranceHomeViewModel(repository)
+            val viewModel = InsuranceHomeViewModel(getInsuranceList)
 
             // Then
             viewModel.uiState.test {
@@ -93,10 +93,10 @@ class InsuranceHomeViewModelTest {
     fun `IllegalStateException 발생 시 Error 상태가 된다`() =
         runTest {
             // Given
-            coEvery { repository.getInsuranceList() } throws IllegalStateException("서버 오류")
+            coEvery { getInsuranceList() } throws IllegalStateException("서버 오류")
 
             // When
-            val viewModel = InsuranceHomeViewModel(repository)
+            val viewModel = InsuranceHomeViewModel(getInsuranceList)
 
             // Then
             viewModel.uiState.test {

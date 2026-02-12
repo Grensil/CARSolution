@@ -3,7 +3,7 @@ package com.example.carsolution.feature.fuel.viewmodel
 import app.cash.turbine.test
 import com.example.carsolution.core.common.UiState
 import com.example.carsolution.domain.model.FuelStation
-import com.example.carsolution.domain.repository.FuelStationRepository
+import com.example.carsolution.domain.usecase.GetFuelStationListUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +21,7 @@ import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class FuelHomeViewModelTest {
-    private val repository: FuelStationRepository = mockk()
+    private val getFuelStationList: GetFuelStationListUseCase = mockk()
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @Before
@@ -41,10 +41,10 @@ class FuelHomeViewModelTest {
             val stations = listOf(
                 FuelStation("fuel-1", "SK에너지", "서울시 강남구", 1680, 1480),
             )
-            coEvery { repository.getFuelStationList() } returns stations
+            coEvery { getFuelStationList() } returns stations
 
             // When
-            val viewModel = FuelHomeViewModel(repository)
+            val viewModel = FuelHomeViewModel(getFuelStationList)
 
             // Then
             viewModel.uiState.test {
@@ -58,10 +58,10 @@ class FuelHomeViewModelTest {
     fun `IOException 발생 시 Error 상태가 된다`() =
         runTest {
             // Given
-            coEvery { repository.getFuelStationList() } throws IOException("네트워크 오류")
+            coEvery { getFuelStationList() } throws IOException("네트워크 오류")
 
             // When
-            val viewModel = FuelHomeViewModel(repository)
+            val viewModel = FuelHomeViewModel(getFuelStationList)
 
             // Then
             viewModel.uiState.test {
@@ -74,10 +74,10 @@ class FuelHomeViewModelTest {
     fun `IllegalStateException 발생 시 Error 상태가 된다`() =
         runTest {
             // Given
-            coEvery { repository.getFuelStationList() } throws IllegalStateException("서버 오류")
+            coEvery { getFuelStationList() } throws IllegalStateException("서버 오류")
 
             // When
-            val viewModel = FuelHomeViewModel(repository)
+            val viewModel = FuelHomeViewModel(getFuelStationList)
 
             // Then
             viewModel.uiState.test {

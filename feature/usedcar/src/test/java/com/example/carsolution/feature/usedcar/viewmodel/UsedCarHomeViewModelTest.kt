@@ -3,7 +3,7 @@ package com.example.carsolution.feature.usedcar.viewmodel
 import app.cash.turbine.test
 import com.example.carsolution.core.common.UiState
 import com.example.carsolution.domain.model.UsedCar
-import com.example.carsolution.domain.repository.UsedCarRepository
+import com.example.carsolution.domain.usecase.GetUsedCarListUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +21,7 @@ import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class UsedCarHomeViewModelTest {
-    private val repository: UsedCarRepository = mockk()
+    private val getUsedCarList: GetUsedCarListUseCase = mockk()
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @Before
@@ -41,10 +41,10 @@ class UsedCarHomeViewModelTest {
             val cars = listOf(
                 UsedCar("car-1", "아반떼 CN7", 2022, 15000, 22000000),
             )
-            coEvery { repository.getUsedCarList() } returns cars
+            coEvery { getUsedCarList() } returns cars
 
             // When
-            val viewModel = UsedCarHomeViewModel(repository)
+            val viewModel = UsedCarHomeViewModel(getUsedCarList)
 
             // Then
             viewModel.uiState.test {
@@ -58,10 +58,10 @@ class UsedCarHomeViewModelTest {
     fun `IOException 발생 시 Error 상태가 된다`() =
         runTest {
             // Given
-            coEvery { repository.getUsedCarList() } throws IOException("네트워크 오류")
+            coEvery { getUsedCarList() } throws IOException("네트워크 오류")
 
             // When
-            val viewModel = UsedCarHomeViewModel(repository)
+            val viewModel = UsedCarHomeViewModel(getUsedCarList)
 
             // Then
             viewModel.uiState.test {
@@ -74,10 +74,10 @@ class UsedCarHomeViewModelTest {
     fun `IllegalStateException 발생 시 Error 상태가 된다`() =
         runTest {
             // Given
-            coEvery { repository.getUsedCarList() } throws IllegalStateException("서버 오류")
+            coEvery { getUsedCarList() } throws IllegalStateException("서버 오류")
 
             // When
-            val viewModel = UsedCarHomeViewModel(repository)
+            val viewModel = UsedCarHomeViewModel(getUsedCarList)
 
             // Then
             viewModel.uiState.test {

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carsolution.core.common.UiState
 import com.example.carsolution.domain.model.FuelStation
-import com.example.carsolution.domain.repository.FuelStationRepository
+import com.example.carsolution.domain.usecase.GetFuelStationListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +16,7 @@ import javax.inject.Inject
 class FuelHomeViewModel
     @Inject
     constructor(
-        private val repository: FuelStationRepository,
+        private val getFuelStationList: GetFuelStationListUseCase,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow<UiState<List<FuelStation>>>(UiState.Loading)
         val uiState: StateFlow<UiState<List<FuelStation>>> = _uiState
@@ -29,7 +29,7 @@ class FuelHomeViewModel
             viewModelScope.launch {
                 _uiState.value = UiState.Loading
                 try {
-                    val list = repository.getFuelStationList()
+                    val list = getFuelStationList()
                     _uiState.value = UiState.Success(list)
                 } catch (e: IOException) {
                     _uiState.value = UiState.Error(e.message ?: "네트워크 오류가 발생했습니다")
