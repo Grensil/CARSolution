@@ -16,6 +16,7 @@ plugins {
     alias(libs.plugins.kotlinter) apply false
     alias(libs.plugins.android.cache.fix) apply false
     alias(libs.plugins.sonarlint) apply false
+    alias(libs.plugins.kover) apply false
 }
 
 tasks.register<Copy>("installGitHooks") {
@@ -29,6 +30,9 @@ tasks.named("prepareKotlinBuildScriptModel") {
 }
 
 subprojects {
+    // Kover — test coverage
+    apply(plugin = "org.jetbrains.kotlinx.kover")
+
     // Detekt — Kotlin static analysis
     apply(plugin = "dev.detekt")
 

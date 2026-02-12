@@ -26,6 +26,7 @@ moduleGraphAssert = "2.9.0"
 kotlinter = "5.4.0"
 androidCacheFix = "3.0.2"
 sonarlint = "7.0.1"
+kover = "0.9.6"
 mockk = "1.13.16"
 turbine = "1.2.0"
 
@@ -80,3 +81,4 @@ module-graph-assert = { id = "com.jraska.module.graph.assertion", version.ref = 
 kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
 android-cache-fix = { id = "org.gradle.android.cache-fix", version.ref = "androidCacheFix" }
 sonarlint = { id = "name.remal.sonarlint", version.ref = "sonarlint" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
