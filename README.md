@@ -1,5 +1,7 @@
 # CarInfo
 
+[![Code Quality](https://github.com/Grensil/CarInfo/actions/workflows/code-quality.yml/badge.svg)](https://github.com/Grensil/CarInfo/actions/workflows/code-quality.yml)
+
 Android 개발에서 사용되는 다양한 기술과 아키텍처 패턴을 직접 적용하고 테스트해보기 위한 토이 프로젝트입니다.
 
 실제 서비스 구현보다는 **멀티모듈 클린 아키텍처, Jetpack Compose, 코드 품질 자동화** 등 현업에서 쓰이는 기술 스택을 하나의 프로젝트에서 종합적으로 실험하는 것이 목표입니다.
