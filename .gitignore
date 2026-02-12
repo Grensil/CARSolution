@@ -27,3 +27,9 @@ api_keys.properties
 # Generated files
 app/release/
 app/debug/
+*.apk
+*.hprof
+
+# AI CLI tools
+.claude/
+.gemini/
