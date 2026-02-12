@@ -14,7 +14,7 @@ class NhtsaVehicleSpecRepository
         override suspend fun decodeVin(vin: String): VehicleSpec {
             val response = api.decodeVin(vin)
             val result = response.results.firstOrNull()
-                ?: throw IllegalStateException("VIN 디코딩 결과가 없습니다")
+                ?: error("VIN 디코딩 결과가 없습니다")
             return result.toVehicleSpec()
         }
 
