@@ -11,8 +11,10 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.io.IOException
 
 class NhtsaVehicleSpecRepositoryTest {
     private val api: NhtsaApiService = mockk()
@@ -50,6 +52,11 @@ class NhtsaVehicleSpecRepositoryTest {
             assertEquals("Honda", result.make)
             assertEquals("Civic", result.model)
             assertEquals(2021, result.year)
+            assertEquals("Sedan", result.bodyClass)
+            assertEquals(4, result.engineCylinders)
+            assertEquals(158, result.engineHp)
+            assertEquals(2.0, result.displacementL, 0.01)
+            assertEquals("CVT", result.transmissionStyle)
         }
 
     @Test(expected = IllegalStateException::class)
@@ -62,6 +69,14 @@ class NhtsaVehicleSpecRepositoryTest {
             )
 
             repository.decodeVin("INVALID")
+        }
+
+    @Test(expected = IOException::class)
+    fun `API 호출 실패 시 예외가 전파된다`() =
+        runTest {
+            coEvery { api.decodeVin(any(), any()) } throws IOException("네트워크 오류")
+
+            repository.decodeVin("1HGBH41JXMN109186")
         }
 
     @Test
@@ -83,6 +98,20 @@ class NhtsaVehicleSpecRepositoryTest {
         }
 
     @Test
+    fun `제조사가 없으면 빈 리스트를 반환한다`() =
+        runTest {
+            coEvery { api.getAllMakes(any()) } returns NhtsaGetAllMakesResponse(
+                count = 0,
+                message = "OK",
+                results = emptyList(),
+            )
+
+            val result = repository.getAllMakes()
+
+            assertTrue(result.isEmpty())
+        }
+
+    @Test
     fun `제조사별 모델 목록을 정렬하여 반환한다`() =
         runTest {
             coEvery { api.getModelsForMake(any(), any()) } returns NhtsaGetModelsResponse(
@@ -97,5 +126,19 @@ class NhtsaVehicleSpecRepositoryTest {
             val result = repository.getModelsForMake("Honda")
 
             assertEquals(listOf("Accord", "Civic"), result)
+        }
+
+    @Test
+    fun `모델이 없으면 빈 리스트를 반환한다`() =
+        runTest {
+            coEvery { api.getModelsForMake(any(), any()) } returns NhtsaGetModelsResponse(
+                count = 0,
+                message = "OK",
+                results = emptyList(),
+            )
+
+            val result = repository.getModelsForMake("UnknownMake")
+
+            assertTrue(result.isEmpty())
         }
 }

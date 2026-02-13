@@ -8,11 +8,12 @@ import com.grensil.carinfo.data.api.dto.OpinetLowPriceStation
 import com.grensil.carinfo.data.api.dto.OpinetLowTop10Response
 import com.grensil.carinfo.data.api.dto.OpinetLowTop10Result
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Test
+import java.io.IOException
 
 class OpinetFuelStationRepositoryTest {
     private val api: OpinetApiService = mockk()
@@ -22,6 +23,16 @@ class OpinetFuelStationRepositoryTest {
     fun `API 키가 없으면 fallback을 사용한다`() =
         runTest {
             val repository = OpinetFuelStationRepository(api, "", fallback)
+
+            val result = repository.getFuelStationList()
+
+            assertEquals(3, result.size)
+        }
+
+    @Test
+    fun `API 키가 공백이면 fallback을 사용한다`() =
+        runTest {
+            val repository = OpinetFuelStationRepository(api, "   ", fallback)
 
             val result = repository.getFuelStationList()
 
@@ -44,6 +55,7 @@ class OpinetFuelStationRepositoryTest {
 
             assertEquals(1, result.size)
             assertEquals("Test Station", result[0].name)
+            assertEquals(1600L, result[0].price)
         }
 
     @Test
@@ -72,5 +84,37 @@ class OpinetFuelStationRepositoryTest {
             val result = repository.getAverageAllPrices()
 
             assertEquals(5, result.size)
+        }
+
+    @Test(expected = IOException::class)
+    fun `API 호출 실패 시 예외가 전파된다`() =
+        runTest {
+            coEvery { api.getLowTop10(any(), any(), any(), any()) } throws IOException("서버 오류")
+            val repository = OpinetFuelStationRepository(api, "test-key", fallback)
+
+            repository.getFuelStationList()
+        }
+
+    @Test
+    fun `getLowTop10에 productCode와 areaCode가 전달된다`() =
+        runTest {
+            coEvery { api.getLowTop10(any(), any(), any(), any()) } returns OpinetLowTop10Response(
+                result = OpinetLowTop10Result(oil = emptyList()),
+            )
+            val repository = OpinetFuelStationRepository(api, "test-key", fallback)
+
+            repository.getLowTop10("D047", "01")
+
+            coVerify { api.getLowTop10("json", "test-key", "D047", "01") }
+        }
+
+    @Test
+    fun `getFuelStationById는 항상 fallback을 사용한다`() =
+        runTest {
+            val repository = OpinetFuelStationRepository(api, "test-key", fallback)
+
+            val result = repository.getFuelStationById("fuel-1")
+
+            assertEquals("SK에너지 강남점", result?.name)
         }
 }

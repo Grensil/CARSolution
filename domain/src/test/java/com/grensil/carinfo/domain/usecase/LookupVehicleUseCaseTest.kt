@@ -29,4 +29,23 @@ class LookupVehicleUseCaseTest {
             coEvery { repository.getVehicleByPlateNumber("99하9999") } returns null
             useCase("99하9999")
         }
+
+    @Test
+    fun `NoSuchElementException 메시지가 올바르다`() =
+        runTest {
+            coEvery { repository.getVehicleByPlateNumber("99하9999") } returns null
+
+            try {
+                useCase("99하9999")
+            } catch (e: NoSuchElementException) {
+                assertEquals("차량 정보를 찾을 수 없습니다", e.message)
+            }
+        }
+
+    @Test(expected = RuntimeException::class)
+    fun `repository 예외는 그대로 전파된다`() =
+        runTest {
+            coEvery { repository.getVehicleByPlateNumber(any()) } throws RuntimeException("DB 오류")
+            useCase("12가3456")
+        }
 }

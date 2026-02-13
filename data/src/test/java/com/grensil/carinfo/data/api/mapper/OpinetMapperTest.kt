@@ -41,4 +41,47 @@ class OpinetMapperTest {
         assertEquals(1630L, fuelStation.price)
         assertEquals(1.5, fuelStation.distance, 0.01)
     }
+
+    @Test
+    fun `가격 소수점은 절사된다`() {
+        val station = OpinetLowPriceStation(
+            stationId = "A0001",
+            stationName = "Test",
+            price = 1599.9,
+            distance = 0.0,
+        )
+
+        val fuelStation = station.toFuelStation()
+
+        assertEquals(1599L, fuelStation.price)
+    }
+
+    @Test
+    fun `가격이 0이면 0으로 변환된다`() {
+        val station = OpinetLowPriceStation(
+            stationId = "A0001",
+            stationName = "Test",
+            price = 0.0,
+            distance = 0.0,
+        )
+
+        val fuelStation = station.toFuelStation()
+
+        assertEquals(0L, fuelStation.price)
+    }
+
+    @Test
+    fun `음수 diff 값이 정상 처리된다`() {
+        val avgPrice = OpinetAvgPrice(
+            productCode = "B027",
+            productName = "휘발유",
+            price = 1500.0,
+            diff = -15.5,
+            date = "20240101",
+        )
+
+        val fuelPrice = avgPrice.toFuelPrice()
+
+        assertEquals(-15.5, fuelPrice.diff, 0.01)
+    }
 }

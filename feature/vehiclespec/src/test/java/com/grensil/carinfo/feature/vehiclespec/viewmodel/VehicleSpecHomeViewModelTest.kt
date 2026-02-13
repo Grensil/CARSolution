@@ -5,6 +5,7 @@ import com.grensil.carinfo.core.common.UiState
 import com.grensil.carinfo.domain.model.VehicleSpec
 import com.grensil.carinfo.domain.usecase.DecodeVinUseCase
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -87,6 +88,43 @@ class VehicleSpecHomeViewModelTest {
                 val state = awaitItem()
                 assertTrue(state is UiState.Error)
                 assertEquals("서버 오류", (state as UiState.Error).message)
+            }
+        }
+
+    @Test
+    fun `searchVin 호출 시 새로운 VIN으로 조회한다`() =
+        runTest {
+            coEvery { decodeVin(any()) } returns fakeSpec
+
+            val viewModel = VehicleSpecHomeViewModel(decodeVin)
+
+            val newSpec = fakeSpec.copy(make = "Toyota", model = "Camry", vin = "NEW_VIN")
+            coEvery { decodeVin("NEW_VIN") } returns newSpec
+
+            viewModel.searchVin("NEW_VIN")
+
+            viewModel.uiState.test {
+                val state = awaitItem()
+                assertTrue(state is UiState.Success)
+                assertEquals("Toyota", (state as UiState.Success).data.make)
+            }
+            coVerify { decodeVin("NEW_VIN") }
+        }
+
+    @Test
+    fun `searchVin 실패 시 Error 상태가 된다`() =
+        runTest {
+            coEvery { decodeVin("1HGBH41JXMN109186") } returns fakeSpec
+            coEvery { decodeVin("INVALID") } throws IllegalStateException("VIN 디코딩 결과가 없습니다")
+
+            val viewModel = VehicleSpecHomeViewModel(decodeVin)
+
+            viewModel.searchVin("INVALID")
+
+            viewModel.uiState.test {
+                val state = awaitItem()
+                assertTrue(state is UiState.Error)
+                assertEquals("VIN 디코딩 결과가 없습니다", (state as UiState.Error).message)
             }
         }
 }
